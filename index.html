@@ -30,6 +30,7 @@
         .main {
             padding: 20px;
             margin-top: 30px;
+            text-align: center;
         }
         .footer {
             position: fixed;
@@ -40,6 +41,13 @@
             color: white;
             text-align: center;
             padding: 10px 0;
+        }
+        #mirrorVideo {
+            width: 80%;
+            max-width: 600px;
+            transform: scaleX(-1); /* Mirrors the video horizontally */
+            border: 5px solid #333;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -56,7 +64,22 @@
 <div class="main">
     <h1>Welcome to Mirror Shop</h1>
     <p>Explore our wide range of quality mirrors perfect for your selfie needs and home decor.</p>
-    <!-- Информация о продуктах, отзывы и т.д. -->
+    <video id="mirrorVideo" autoplay playsinline></video>
+    <script>
+        const video = document.getElementById('mirrorVideo');
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                video.srcObject = stream;
+            })
+            .catch(function(error) {
+                console.log("Error accessing the camera: ", error);
+            });
+        } else {
+            alert('Your browser does not support user media');
+        }
+    </script>
 </div>
 
 <div class="footer">© 2024 Mirror Shop - Capture Your Best Moments</div>
