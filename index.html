@@ -8,14 +8,15 @@
             padding: 0;
             height: 100%;
             font-family: Arial, sans-serif;
-            overflow: hidden; /* Предотвращает прокрутку, если видео превышает размеры экрана */
+            overflow: auto;
+            background-color: #f0f0f0;
         }
         .menu {
             position: fixed;
             top: 0;
             width: 100%;
             background-color: #333;
-            z-index: 2; /* Убедитесь, что меню остается над видео */
+            z-index: 100;
         }
         .menu a {
             float: left;
@@ -31,9 +32,9 @@
         }
         .content {
             position: relative;
-            z-index: 1; /* Ниже видео, но выше фона */
-            color: white; /* Убедитесь, что текст виден на фоне видео */
-            padding: 100px 20px 20px 20px; /* Отступ сверху для меню */
+            z-index: 1;
+            color: white;
+            padding: 60px 20px 20px 20px;
         }
         #backgroundVideo {
             position: fixed;
@@ -43,8 +44,8 @@
             min-height: 100%;
             width: auto; 
             height: auto;
-            z-index: 0; /* Наименьший z-index, чтобы видео было фоном */
-            transform: scaleX(-1); /* Отражение видео */
+            z-index: -1;
+            transform: scaleX(-1);
         }
         .footer {
             position: fixed;
@@ -54,7 +55,35 @@
             color: white;
             text-align: center;
             padding: 10px 0;
-            z-index: 2; /* Убедитесь, что футер остается над видео */
+            z-index: 100;
+        }
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: rgba(255, 255, 255, 0.8);
+            margin: 10px;
+            padding: 20px;
+            width: calc(33% - 40px);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            color: #333;
+        }
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+        }
+        @media (max-width: 768px) {
+            .product-card {
+                width: calc(50% - 40px);
+            }
+        }
+        @media (max-width: 480px) {
+            .product-card {
+                width: calc(100% - 40px);
+            }
         }
     </style>
 </head>
@@ -68,12 +97,21 @@
     <a href="#contact">Contact</a>
 </div>
 
-<div class="content">
-    <h1>Welcome to Mirror Shop</h1>
-    <p>Explore our wide range of quality mirrors perfect for your selfie needs and home decor.</p>
-</div>
-
 <video id="backgroundVideo" autoplay muted playsinline loop></video>
+
+<div class="content">
+    <h1 style="color: #333; text-align: center;">Our Mirrors Catalog</h1>
+    <div class="product-container">
+        <!-- Пример товара -->
+        <div class="product-card">
+            <img src="mirror1.jpg" alt="Classic Mirror">
+            <h2>Classic Mirror</h2>
+            <p>A timeless elegance for your living room.</p>
+            <p>Price: $199</p>
+        </div>
+        <!-- Добавьте больше товаров аналогичным образом -->
+    </div>
+</div>
 
 <div class="footer">© 2024 Mirror Shop - Capture Your Best Moments</div>
 
