@@ -16,7 +16,7 @@
             top: 0;
             width: 100%;
             background-color: #333;
-            z-index: 100;
+            z-index: 100; /* Ensure menu is above the video */
         }
         .menu a {
             float: left;
@@ -32,9 +32,9 @@
         }
         .content {
             position: relative;
-            z-index: 1;
-            color: white;
-            padding: 60px 20px 20px 20px;
+            z-index: 1; /* Above the video */
+            color: white; /* Text color for visibility against video background */
+            padding: 100px 20px 20px 20px; /* Space for the fixed menu */
         }
         #backgroundVideo {
             position: fixed;
@@ -44,8 +44,8 @@
             min-height: 100%;
             width: auto; 
             height: auto;
-            z-index: -1;
-            transform: scaleX(-1);
+            z-index: -1; /* Behind everything */
+            transform: scaleX(-1); /* Mirror the video */
         }
         .footer {
             position: fixed;
@@ -55,21 +55,22 @@
             color: white;
             text-align: center;
             padding: 10px 0;
-            z-index: 100;
+            z-index: 100; /* Ensure footer is above the video */
         }
         .product-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             margin-top: 20px;
+            color: #333; /* Text color */
         }
         .product-card {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
             margin: 10px;
             padding: 20px;
             width: calc(33% - 40px);
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            color: #333;
+            color: #333; /* Text color for visibility */
         }
         .product-card img {
             max-width: 100%;
@@ -103,6 +104,25 @@
     <h1 style="color: #333; text-align: center;">Our Mirrors Catalog</h1>
     <div class="product-container">
         <!-- Пример товара -->
+        <div class="product-card">
+            <img src="mirror1.jpg" alt="Classic Mirror">
+            <h2>Classic Mirror</h2>
+            <p>A timeless elegance for your living room.</p>
+            <p>Price: $199</p>
+        </div>
+        <!-- Добавьте больше товаров аналогичным образом -->
+
+         <!-- Пример товара -->
+        <div class="product-card">
+            <img src="mirror1.jpg" alt="Classic Mirror">
+            <h2>Classic Mirror</h2>
+            <p>A timeless elegance for your living room.</p>
+            <p>Price: $199</p>
+        </div>
+        <!-- Добавьте больше товаров аналогичным образом -->
+
+
+         <!-- Пример товара -->
         <div class="product-card">
             <img src="mirror1.jpg" alt="Classic Mirror">
             <h2>Classic Mirror</h2>
