@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin: Manage Transport Schedule</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .schedule {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+  </style>
+  <!-- Include Firebase SDK via script tags -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AlzaSyCXiJx_FY3rAgDaoP8DoUPvUyrFqWp1UhE8",
+      authDomain: "partybus-56b21.firebaseapp.com",
+      projectId: "partybus-56b21",
+      storageBucket: "partybus-56b21.appspot.com",
+      messagingSenderId: "1051758565337",
+      appId: "1:1051758565337:web:e5cf5fc1f9d16918340f28",
+      measurementId: "G-3ZTSE3ZNTG"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Function to add a new schedule to Firestore
+    function addSchedule(event) {
+      event.preventDefault();
+      const departure = document.getElementById('departure').value;
+      const arrival = document.getElementById('arrival').value;
+      const occupancy = document.getElementById('occupancy').value;
+
+      // Add new document to the schedule collection
+      db.collection("schedule").add({
+        departure: departure,
+        arrival: arrival,
+        occupancy: occupancy
+      }).then(() => {
+        alert("Schedule added successfully!");
+        document.getElementById('scheduleForm').reset();
+        loadSchedule(); // Reload the schedule list after adding
+      }).catch((error) => {
+        console.error("Error adding schedule: ", error);
+      });
+    }
+
+    // Function to load the schedule from Firestore
+    function loadSchedule() {
+      const scheduleDiv = document.getElementById('scheduleList');
+      console.log("Loading schedule data...");
+
+      // Fetch the schedule from Firestore
+      db.collection("schedule").get().then((querySnapshot) => {
+        scheduleDiv.innerHTML = ''; // Clear the previous schedule
+        if (querySnapshot.empty) {
+          scheduleDiv.innerHTML = "<p>No schedules available.</p>";
+        } else {
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const scheduleId = doc.id;
+            console.log("Document data:", data); // Log each document's data
+
+            // Append each schedule with an edit button
+            scheduleDiv.innerHTML += `
+              <div class="schedule">
+                <p><strong>Departure:</strong> ${data.departure}</p>
+                <p><strong>Arrival:</strong> ${data.arrival}</p>
+                <p><strong>Occupancy:</strong> ${data.occupancy}</p>
+                <button onclick="editSchedule('${scheduleId}', '${data.departure}', '${data.arrival}', '${data.occupancy}')">Edit</button>
+              </div>`;
+          });
+        }
+      }).catch((error) => {
+        console.error("Error fetching schedule: ", error);
+      });
+    }
+
+    // Function to edit an existing schedule
+    function editSchedule(id, departure, arrival, occupancy) {
+      document.getElementById('departure').value = departure;
+      document.getElementById('arrival').value = arrival;
+      document.getElementById('occupancy').value = occupancy;
+
+      const saveButton = document.getElementById('saveButton');
+      saveButton.innerText = 'Update Schedule';
+      saveButton.onclick = function() {
+        updateSchedule(id);
+      };
+    }
+
+    // Function to update a schedule
+    function updateSchedule(id) {
+      const departure = document.getElementById('departure').value;
+      const arrival = document.getElementById('arrival').value;
+      const occupancy = document.getElementById('occupancy').value;
+
+      db.collection("schedule").doc(id).update({
+        departure: departure,
+        arrival: arrival,
+        occupancy: occupancy
+      }).then(() => {
+        alert("Schedule updated successfully!");
+        document.getElementById('scheduleForm').reset();
+        document.getElementById('saveButton').innerText = 'Add Schedule';
+        loadSchedule(); // Reload the schedule list after updating
+      }).catch((error) => {
+        console.error("Error updating schedule: ", error);
+      });
+    }
+
+    // Load schedule when the page loads
+    window.onload = function() {
+      loadSchedule();
+    };
+  </script>
+</head>
+<body>
+  <h1>Admin: Manage Transport Schedule</h1>
+
+  <!-- Form to add or edit schedule -->
+  <form id="scheduleForm" onsubmit="addSchedule(event)">
+    <label for="departure">Departure Time:</label>
+    <input type="text" id="departure" required>
+
+    <label for="arrival">Arrival Time:</label>
+    <input type="text" id="arrival" required>
+
+    <label for="occupancy">Occupancy:</label>
+    <input type="number" id="occupancy" required>
+
+    <button type="submit" id="saveButton">Add Schedule</button>
+  </form>
+
+  <!-- Div to display the schedule list -->
+  <div id="scheduleList"></div>
+</body>
+</html>
