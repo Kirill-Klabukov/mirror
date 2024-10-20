@@ -42,6 +42,9 @@
       border-radius: 5px;
       background-color: #f9f9f9;
     }
+    .passenger {
+      margin-left: 20px;
+    }
   </style>
   <!-- Include Firebase SDK via script tags -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -84,7 +87,7 @@
       });
     }
 
-    // Function to load the schedule from Firestore and display passengers
+    // Function to load the schedule from Firestore and display reservations
     function loadSchedule() {
       const scheduleDiv = document.getElementById('scheduleList');
       console.log("Loading schedule data...");
@@ -100,12 +103,12 @@
             const scheduleId = doc.id;
             console.log("Document data:", data); // Log each document's data
 
-            // Fetch passengers for each schedule
-            db.collection(`schedule/${scheduleId}/passengers`).get().then((passengerSnapshot) => {
-              let passengersList = '';
-              passengerSnapshot.forEach((passengerDoc) => {
-                const passenger = passengerDoc.data();
-                passengersList += `<p>Name: ${passenger.name}, Phone: ${passenger.phone}</p>`;
+            // Fetch reservations for each schedule
+            db.collection("reservations").where("scheduleId", "==", scheduleId).get().then((reservationSnapshot) => {
+              let reservationsList = '';
+              reservationSnapshot.forEach((reservationDoc) => {
+                const reservation = reservationDoc.data();
+                reservationsList += `<p class="passenger">Name: ${reservation.name}, Phone: ${reservation.phone}</p>`;
               });
 
               // Append each schedule with edit, delete, and passenger list
@@ -117,7 +120,7 @@
                   <button onclick="editSchedule('${scheduleId}', '${data.departure}', '${data.arrival}', '${data.occupancy}')">Edit</button>
                   <button class="delete-btn" onclick="deleteSchedule('${scheduleId}')">Delete</button>
                   <h4>Passengers:</h4>
-                  ${passengersList ? passengersList : "<p>No passengers</p>"}
+                  ${reservationsList ? reservationsList : "<p>No passengers</p>"}
                 </div>`;
             });
           });
