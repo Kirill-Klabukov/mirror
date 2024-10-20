@@ -26,10 +26,14 @@
     }
     button {
       padding: 10px 15px;
+      margin-right: 10px;
       background-color: #28a745;
       color: white;
       border: none;
       cursor: pointer;
+    }
+    .delete-btn {
+      background-color: #dc3545;
     }
     .schedule {
       margin: 20px 0;
@@ -96,19 +100,32 @@
             const scheduleId = doc.id;
             console.log("Document data:", data); // Log each document's data
 
-            // Append each schedule with an edit button
+            // Append each schedule with edit and delete buttons
             scheduleDiv.innerHTML += `
               <div class="schedule">
                 <p><strong>Departure:</strong> ${data.departure}</p>
                 <p><strong>Arrival:</strong> ${data.arrival}</p>
                 <p><strong>Occupancy:</strong> ${data.occupancy}</p>
                 <button onclick="editSchedule('${scheduleId}', '${data.departure}', '${data.arrival}', '${data.occupancy}')">Edit</button>
+                <button class="delete-btn" onclick="deleteSchedule('${scheduleId}')">Delete</button>
               </div>`;
           });
         }
       }).catch((error) => {
         console.error("Error fetching schedule: ", error);
       });
+    }
+
+    // Function to delete a schedule from Firestore
+    function deleteSchedule(id) {
+      if (confirm("Are you sure you want to delete this schedule?")) {
+        db.collection("schedule").doc(id).delete().then(() => {
+          alert("Schedule deleted successfully!");
+          loadSchedule(); // Reload the schedule list after deleting
+        }).catch((error) => {
+          console.error("Error deleting schedule: ", error);
+        });
+      }
     }
 
     // Function to edit an existing schedule
