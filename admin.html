@@ -70,13 +70,6 @@
       const arrival = document.getElementById('arrival').value;
       const occupancy = document.getElementById('occupancy').value;
 
-      // Validate occupancy format (should be like "number/number")
-      const occupancyPattern = /^\d+\/\d+$/;
-      if (!occupancyPattern.test(occupancy)) {
-        alert("Please enter occupancy in the format reserved/total (e.g., 18/25).");
-        return;
-      }
-
       // Add new document to the schedule collection
       db.collection("schedule").add({
         departure: departure,
@@ -91,7 +84,7 @@
       });
     }
 
-    // Function to load the schedule from Firestore
+    // Function to load the schedule from Firestore and display passengers
     function loadSchedule() {
       const scheduleDiv = document.getElementById('scheduleList');
       console.log("Loading schedule data...");
@@ -107,15 +100,26 @@
             const scheduleId = doc.id;
             console.log("Document data:", data); // Log each document's data
 
-            // Append each schedule with edit and delete buttons
-            scheduleDiv.innerHTML += `
-              <div class="schedule">
-                <p><strong>Departure:</strong> ${data.departure}</p>
-                <p><strong>Arrival:</strong> ${data.arrival}</p>
-                <p><strong>Occupancy:</strong> ${data.occupancy}</p>
-                <button onclick="editSchedule('${scheduleId}', '${data.departure}', '${data.arrival}', '${data.occupancy}')">Edit</button>
-                <button class="delete-btn" onclick="deleteSchedule('${scheduleId}')">Delete</button>
-              </div>`;
+            // Fetch passengers for each schedule
+            db.collection(`schedule/${scheduleId}/passengers`).get().then((passengerSnapshot) => {
+              let passengersList = '';
+              passengerSnapshot.forEach((passengerDoc) => {
+                const passenger = passengerDoc.data();
+                passengersList += `<p>Name: ${passenger.name}, Phone: ${passenger.phone}</p>`;
+              });
+
+              // Append each schedule with edit, delete, and passenger list
+              scheduleDiv.innerHTML += `
+                <div class="schedule">
+                  <p><strong>Departure:</strong> ${data.departure}</p>
+                  <p><strong>Arrival:</strong> ${data.arrival}</p>
+                  <p><strong>Occupancy:</strong> ${data.occupancy}</p>
+                  <button onclick="editSchedule('${scheduleId}', '${data.departure}', '${data.arrival}', '${data.occupancy}')">Edit</button>
+                  <button class="delete-btn" onclick="deleteSchedule('${scheduleId}')">Delete</button>
+                  <h4>Passengers:</h4>
+                  ${passengersList ? passengersList : "<p>No passengers</p>"}
+                </div>`;
+            });
           });
         }
       }).catch((error) => {
@@ -153,13 +157,6 @@
       const departure = document.getElementById('departure').value;
       const arrival = document.getElementById('arrival').value;
       const occupancy = document.getElementById('occupancy').value;
-
-      // Validate occupancy format (should be like "number/number")
-      const occupancyPattern = /^\d+\/\d+$/;
-      if (!occupancyPattern.test(occupancy)) {
-        alert("Please enter occupancy in the format reserved/total (e.g., 18/25).");
-        return;
-      }
 
       db.collection("schedule").doc(id).update({
         departure: departure,
