@@ -80,7 +80,7 @@
                 <p><strong>Departure:</strong> ${data.departure}</p>
                 <p><strong>Arrival:</strong> ${data.arrival}</p>
                 <p><strong>Occupancy:</strong> ${data.occupancy}</p>
-                ${availableSeats > 0 ? `<button onclick="showReservationForm('${scheduleId}', ${availableSeats}, ${data.occupancy})">Reserve</button>` : `<p>No seats available</p>`}
+                ${availableSeats > 0 ? `<button onclick="showReservationForm('${scheduleId}', ${availableSeats}, '${data.occupancy}')">Reserve</button>` : `<p>No seats available</p>`}
               </div>`;
           });
         }
@@ -145,6 +145,7 @@
         db.collection("schedule").doc(selectedScheduleId).update({
           occupancy: updatedOccupancy
         }).then(() => {
+          console.log("Updated occupancy to:", updatedOccupancy);
           alert("Reservation successful! Occupancy updated.");
           document.getElementById('reservationForm').style.display = 'none';
           document.getElementById('reservationForm').reset();
