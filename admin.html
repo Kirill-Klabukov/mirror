@@ -19,7 +19,7 @@
       display: block;
       margin-top: 10px;
     }
-    input[type="text"], input[type="number"] {
+    input[type="text"] {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
@@ -69,6 +69,13 @@
       const departure = document.getElementById('departure').value;
       const arrival = document.getElementById('arrival').value;
       const occupancy = document.getElementById('occupancy').value;
+
+      // Validate occupancy format (should be like "number/number")
+      const occupancyPattern = /^\d+\/\d+$/;
+      if (!occupancyPattern.test(occupancy)) {
+        alert("Please enter occupancy in the format reserved/total (e.g., 18/25).");
+        return;
+      }
 
       // Add new document to the schedule collection
       db.collection("schedule").add({
@@ -147,6 +154,13 @@
       const arrival = document.getElementById('arrival').value;
       const occupancy = document.getElementById('occupancy').value;
 
+      // Validate occupancy format (should be like "number/number")
+      const occupancyPattern = /^\d+\/\d+$/;
+      if (!occupancyPattern.test(occupancy)) {
+        alert("Please enter occupancy in the format reserved/total (e.g., 18/25).");
+        return;
+      }
+
       db.collection("schedule").doc(id).update({
         departure: departure,
         arrival: arrival,
@@ -178,8 +192,8 @@
     <label for="arrival">Arrival Time:</label>
     <input type="text" id="arrival" required>
 
-    <label for="occupancy">Occupancy:</label>
-    <input type="number" id="occupancy" required>
+    <label for="occupancy">Occupancy (reserved/total):</label>
+    <input type="text" id="occupancy" placeholder="e.g., 18/25" required>
 
     <button type="submit" id="saveButton">Add Schedule</button>
   </form>
