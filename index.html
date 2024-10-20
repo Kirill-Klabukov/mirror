@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Party Bus Transport Schedule1</title>
+  <title>Party Bus Transport Schedule</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,6 +14,21 @@
     }
     .schedule {
       margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    button {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #reservationForm {
+      display: none;
+      margin-top: 20px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
@@ -40,35 +55,69 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    let selectedScheduleId = null;
+
     // Function to load the schedule from Firestore
     function loadSchedule() {
-      const scheduleDiv = document.getElementById('schedule');
-      console.log("Attempting to fetch data from Firestore...");
+      const scheduleDiv = document.getElementById('scheduleList');
+      console.log("Loading schedule data...");
 
-      // Fetch data from the Firestore collection "schedule"
+      // Fetch the schedule from Firestore
       db.collection("schedule").get().then((querySnapshot) => {
-        console.log("Data fetched successfully.");
         scheduleDiv.innerHTML = ''; // Clear the previous schedule
-
         if (querySnapshot.empty) {
-          console.log("No documents found in the 'schedule' collection.");
           scheduleDiv.innerHTML = "<p>No schedules available.</p>";
         } else {
           querySnapshot.forEach((doc) => {
             const data = doc.data();
-            console.log("Document data:", data); // Log each document's data to the console
+            const scheduleId = doc.id;
+            const availableSeats = parseInt(data.occupancy.split('/')[1]) - parseInt(data.occupancy.split('/')[0]);
 
-            // Append each schedule to the scheduleDiv
+            // Append each schedule with a reserve button if seats are available
             scheduleDiv.innerHTML += `
               <div class="schedule">
                 <p><strong>Departure:</strong> ${data.departure}</p>
                 <p><strong>Arrival:</strong> ${data.arrival}</p>
                 <p><strong>Occupancy:</strong> ${data.occupancy}</p>
+                ${availableSeats > 0 ? `<button onclick="showReservationForm('${scheduleId}', ${availableSeats})">Reserve</button>` : `<p>No seats available</p>`}
               </div>`;
           });
         }
       }).catch((error) => {
-        console.error("Error fetching schedule:", error); // Log any errors
+        console.error("Error fetching schedule: ", error);
+      });
+    }
+
+    // Show reservation form
+    function showReservationForm(scheduleId, availableSeats) {
+      selectedScheduleId = scheduleId;
+      document.getElementById('reservationForm').style.display = 'block';
+      document.getElementById('availableSeats').innerText = availableSeats;
+    }
+
+    // Submit reservation
+    function submitReservation(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value;
+
+      if (!name || !phone) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      // Add reservation to Firestore
+      db.collection("reservations").add({
+        scheduleId: selectedScheduleId,
+        name: name,
+        phone: phone
+      }).then(() => {
+        alert("Reservation successful!");
+        document.getElementById('reservationForm').style.display = 'none';
+        document.getElementById('reservationForm').reset();
+        loadSchedule(); // Reload the schedule list
+      }).catch((error) => {
+        console.error("Error adding reservation: ", error);
       });
     }
 
@@ -80,8 +129,23 @@
 </head>
 <body>
   <h1>Party Bus Transport Schedule</h1>
-  <div id="schedule">
-    <!-- Schedule will be displayed here -->
+
+  <!-- Div to display the schedule list -->
+  <div id="scheduleList"></div>
+
+  <!-- Reservation form -->
+  <div id="reservationForm">
+    <h3>Reserve Your Seat</h3>
+    <p>Available Seats: <span id="availableSeats"></span></p>
+    <form onsubmit="submitReservation(event)">
+      <label for="name">Your Name:</label>
+      <input type="text" id="name" required>
+
+      <label for="phone">Phone Number:</label>
+      <input type="text" id="phone" required>
+
+      <button type="submit">Submit Reservation</button>
+    </form>
   </div>
 </body>
 </html>
