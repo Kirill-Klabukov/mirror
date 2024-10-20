@@ -1,155 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Mirror Shop</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            overflow: auto;
-            background-color: #f0f0f0;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transport Schedule</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .schedule {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+  </style>
+  <!-- Firebase SDK via script tags -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AlzaSyCXiJx_FY3rAgDaoP8DoUPvUyrFqWp1UhE8",
+      authDomain: "partybus-56b21.firebaseapp.com",
+      projectId: "partybus-56b21",
+      storageBucket: "partybus-56b21.appspot.com",
+      messagingSenderId: "1051758565337",
+      appId: "1:1051758565337:web:e5cf5fc1f9d16918340f28",
+      measurementId: "G-3ZTSE3ZNTG"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Function to load the schedule from Firestore
+    function loadSchedule() {
+      const scheduleDiv = document.getElementById('schedule');
+      console.log("Attempting to fetch data from Firestore...");
+
+      // Fetch data from the Firestore collection "schedule"
+      db.collection("schedule").get().then((querySnapshot) => {
+        console.log("Data fetched successfully.");
+        scheduleDiv.innerHTML = ''; // Clear the previous schedule
+
+        if (querySnapshot.empty) {
+          console.log("No documents found in the 'schedule' collection.");
+          scheduleDiv.innerHTML = "<p>No schedules available.</p>";
+        } else {
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            console.log("Document data:", data); // Log each document's data to the console
+
+            // Append each schedule to the scheduleDiv
+            scheduleDiv.innerHTML += `
+              <div class="schedule">
+                <p><strong>Departure:</strong> ${data.departure}</p>
+                <p><strong>Arrival:</strong> ${data.arrival}</p>
+                <p><strong>Occupancy:</strong> ${data.occupancy}</p>
+              </div>`;
+          });
         }
-        .menu {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: #333;
-            z-index: 100; /* Ensure menu is above the video */
-        }
-        .menu a {
-            float: left;
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-        }
-        .menu a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-        .content {
-            position: relative;
-            z-index: 1; /* Above the video */
-            color: white; /* Text color for visibility against video background */
-            padding: 100px 20px 20px 20px; /* Space for the fixed menu */
-        }
-        #backgroundVideo {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%; 
-            min-height: 100%;
-            width: auto; 
-            height: auto;
-            z-index: -1; /* Behind everything */
-            transform: scaleX(-1); /* Mirror the video */
-        }
-        .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            z-index: 100; /* Ensure footer is above the video */
-        }
-        .product-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
-            color: #333; /* Text color */
-        }
-        .product-card {
-            background: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-            margin: 10px;
-            padding: 20px;
-            width: calc(33% - 40px);
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            color: #333; /* Text color for visibility */
-        }
-        .product-card img {
-            max-width: 100%;
-            height: auto;
-        }
-        @media (max-width: 768px) {
-            .product-card {
-                width: calc(50% - 40px);
-            }
-        }
-        @media (max-width: 480px) {
-            .product-card {
-                width: calc(100% - 40px);
-            }
-        }
-    </style>
+      }).catch((error) => {
+        console.error("Error fetching schedule:", error); // Log any errors
+      });
+    }
+
+    // Load schedule when the page loads
+    window.onload = function() {
+      loadSchedule();
+    };
+  </script>
 </head>
 <body>
-
-<div class="menu">
-    <a href="#home">Home</a>
-    <a href="#catalog">Catalog</a>
-    <a href="#about">About Us</a>
-    <a href="#reviews">Reviews</a>
-    <a href="#contact">Contact</a>
-</div>
-
-<video id="backgroundVideo" autoplay muted playsinline loop></video>
-
-<div class="content">
-    <h1 style="color: #333; text-align: center;">Our Mirrors Catalog</h1>
-    <div class="product-container">
-        <!-- Пример товара -->
-        <div class="product-card">
-            <img src="mirror1.jpg" alt="Classic Mirror">
-            <h2>Classic Mirror</h2>
-            <p>A timeless elegance for your living room.</p>
-            <p>Price: $199</p>
-        </div>
-        <!-- Добавьте больше товаров аналогичным образом -->
-
-         <!-- Пример товара -->
-        <div class="product-card">
-            <img src="mirror1.jpg" alt="Classic Mirror">
-            <h2>Classic Mirror</h2>
-            <p>A timeless elegance for your living room.</p>
-            <p>Price: $199</p>
-        </div>
-        <!-- Добавьте больше товаров аналогичным образом -->
-
-
-         <!-- Пример товара -->
-        <div class="product-card">
-            <img src="mirror1.jpg" alt="Classic Mirror">
-            <h2>Classic Mirror</h2>
-            <p>A timeless elegance for your living room.</p>
-            <p>Price: $199</p>
-        </div>
-        <!-- Добавьте больше товаров аналогичным образом -->
-    </div>
-</div>
-
-<div class="footer">© 2024 Mirror Shop - Capture Your Best Moments</div>
-
-<script>
-    const video = document.getElementById('backgroundVideo');
-
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function(stream) {
-            video.srcObject = stream;
-        })
-        .catch(function(error) {
-            console.log("Error accessing the camera: ", error);
-        });
-    } else {
-        alert('Your browser does not support user media');
-    }
-</script>
-
+  <h1>Party Bus Transport Schedule</h1>
+  <div id="schedule">
+    <!-- Schedule will be displayed here -->
+  </div>
 </body>
 </html>
