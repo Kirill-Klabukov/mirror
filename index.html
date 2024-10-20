@@ -56,6 +56,7 @@
     const db = firebase.firestore();
 
     let selectedScheduleId = null;
+    let selectedScheduleData = null;
 
     // Function to load the schedule from Firestore
     function loadSchedule() {
@@ -79,7 +80,7 @@
                 <p><strong>Departure:</strong> ${data.departure}</p>
                 <p><strong>Arrival:</strong> ${data.arrival}</p>
                 <p><strong>Occupancy:</strong> ${data.occupancy}</p>
-                ${availableSeats > 0 ? `<button onclick="showReservationForm('${scheduleId}', ${availableSeats})">Reserve</button>` : `<p>No seats available</p>`}
+                ${availableSeats > 0 ? `<button onclick="showReservationForm('${scheduleId}', ${availableSeats}, ${data.occupancy})">Reserve</button>` : `<p>No seats available</p>`}
               </div>`;
           });
         }
@@ -89,8 +90,9 @@
     }
 
     // Show reservation form
-    function showReservationForm(scheduleId, availableSeats) {
+    function showReservationForm(scheduleId, availableSeats, occupancy) {
       selectedScheduleId = scheduleId;
+      selectedScheduleData = occupancy;
       document.getElementById('reservationForm').style.display = 'block';
       document.getElementById('availableSeats').innerText = availableSeats;
     }
@@ -106,16 +108,50 @@
         return;
       }
 
+      // Check if the user has already made a reservation for this schedule
+      db.collection("reservations")
+        .where("scheduleId", "==", selectedScheduleId)
+        .where("phone", "==", phone)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            alert("You have already made a reservation for this schedule.");
+          } else {
+            // Proceed to add reservation and update occupancy
+            makeReservation(name, phone);
+          }
+        }).catch((error) => {
+          console.error("Error checking reservation: ", error);
+        });
+    }
+
+    // Make the reservation and update the occupancy
+    function makeReservation(name, phone) {
       // Add reservation to Firestore
       db.collection("reservations").add({
         scheduleId: selectedScheduleId,
         name: name,
         phone: phone
       }).then(() => {
-        alert("Reservation successful!");
-        document.getElementById('reservationForm').style.display = 'none';
-        document.getElementById('reservationForm').reset();
-        loadSchedule(); // Reload the schedule list
+        // Reduce occupancy by 1
+        const occupancyParts = selectedScheduleData.split('/');
+        let reserved = parseInt(occupancyParts[0]);
+        const total = parseInt(occupancyParts[1]);
+
+        reserved += 1;
+        const updatedOccupancy = `${reserved}/${total}`;
+
+        // Update the schedule's occupancy in Firestore
+        db.collection("schedule").doc(selectedScheduleId).update({
+          occupancy: updatedOccupancy
+        }).then(() => {
+          alert("Reservation successful! Occupancy updated.");
+          document.getElementById('reservationForm').style.display = 'none';
+          document.getElementById('reservationForm').reset();
+          loadSchedule(); // Reload the schedule list
+        }).catch((error) => {
+          console.error("Error updating occupancy: ", error);
+        });
       }).catch((error) => {
         console.error("Error adding reservation: ", error);
       });
