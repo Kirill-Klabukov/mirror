@@ -66,25 +66,34 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    let isEditing = false; // Flag to track whether editing or adding
+    let currentScheduleId = null; // Track current schedule ID being edited
+
     // Function to add a new schedule to Firestore
     function addSchedule(event) {
       event.preventDefault();
+
       const departure = document.getElementById('departure').value;
       const arrival = document.getElementById('arrival').value;
       const occupancy = document.getElementById('occupancy').value;
 
-      // Add new document to the schedule collection
-      db.collection("schedule").add({
-        departure: departure,
-        arrival: arrival,
-        occupancy: occupancy
-      }).then(() => {
-        alert("Schedule added successfully!");
-        document.getElementById('scheduleForm').reset();
-        loadSchedule(); // Reload the schedule list after adding
-      }).catch((error) => {
-        console.error("Error adding schedule: ", error);
-      });
+      if (isEditing && currentScheduleId) {
+        // Call updateSchedule if in editing mode
+        updateSchedule(currentScheduleId, departure, arrival, occupancy);
+      } else {
+        // Add new document to the schedule collection
+        db.collection("schedule").add({
+          departure: departure,
+          arrival: arrival,
+          occupancy: occupancy
+        }).then(() => {
+          alert("Schedule added successfully!");
+          resetForm();
+          loadSchedule(); // Reload the schedule list after adding
+        }).catch((error) => {
+          console.error("Error adding schedule: ", error);
+        });
+      }
     }
 
     // Function to load the schedule from Firestore and display reservations
@@ -144,35 +153,38 @@
 
     // Function to edit an existing schedule
     function editSchedule(id, departure, arrival, occupancy) {
+      isEditing = true; // Set flag to true for editing mode
+      currentScheduleId = id; // Track the current schedule ID
+
       document.getElementById('departure').value = departure;
       document.getElementById('arrival').value = arrival;
       document.getElementById('occupancy').value = occupancy;
 
       const saveButton = document.getElementById('saveButton');
       saveButton.innerText = 'Update Schedule';
-      saveButton.onclick = function() {
-        updateSchedule(id);
-      };
     }
 
     // Function to update a schedule
-    function updateSchedule(id) {
-      const departure = document.getElementById('departure').value;
-      const arrival = document.getElementById('arrival').value;
-      const occupancy = document.getElementById('occupancy').value;
-
+    function updateSchedule(id, departure, arrival, occupancy) {
       db.collection("schedule").doc(id).update({
         departure: departure,
         arrival: arrival,
         occupancy: occupancy
       }).then(() => {
         alert("Schedule updated successfully!");
-        document.getElementById('scheduleForm').reset();
-        document.getElementById('saveButton').innerText = 'Add Schedule';
+        resetForm(); // Reset form and button text after updating
         loadSchedule(); // Reload the schedule list after updating
       }).catch((error) => {
         console.error("Error updating schedule: ", error);
       });
+    }
+
+    // Function to reset the form
+    function resetForm() {
+      document.getElementById('scheduleForm').reset();
+      document.getElementById('saveButton').innerText = 'Add Schedule';
+      isEditing = false; // Reset the editing flag
+      currentScheduleId = null; // Clear the current schedule ID
     }
 
     // Load schedule when the page loads
