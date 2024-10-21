@@ -255,12 +255,10 @@
         db.collection("schedule").doc(selectedScheduleId).update({
           occupancy: updatedOccupancy
         }).then(() => {
-          console.log("Updated occupancy to:", updatedOccupancy);
-          document.getElementById('reservationForm').style.display = 'none'; // Hide the form
-
-          // Show success message with reservation time
-          document.getElementById('successMessage').innerText = `Thank you for your reservation! You have reserved a seat for the departure at ${selectedScheduleTime}. Please don't forget to contact us if needed.`;
-          document.getElementById('successMessage').style.display = 'block';
+          document.getElementById('reservationForm').remove(); // Completely remove the form
+          const successMessage = document.getElementById('successMessage');
+          successMessage.innerText = `Thank you for your reservation! You have reserved a seat for the departure at ${selectedScheduleTime}. Please don't forget to contact us if needed.`;
+          successMessage.style.display = 'block'; // Show success message
         }).catch((error) => {
           console.error("Error updating occupancy: ", error);
         });
