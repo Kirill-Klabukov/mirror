@@ -194,8 +194,6 @@
       const scheduleElement = document.getElementById(`schedule-${scheduleId}`);
       scheduleElement.insertAdjacentHTML('afterend', `
         <div id="reservationForm" class="reservation-form">
-          <h3>Reserve Your Seat</h3>
-          <p>Available Seats: <span id="availableSeats">${availableSeats}</span></p>
           <form onsubmit="submitReservation(event)">
             <label for="name">Your Name:</label>
             <input type="text" id="name" required>
@@ -256,9 +254,9 @@
         db.collection("schedule").doc(selectedScheduleId).update({
           occupancy: updatedOccupancy
         }).then(() => {
-          // Hide the entire reservation form, including headers and seat count
-          document.getElementById('reservationForm').innerHTML = ''; 
-
+          // Hide the form and show only the success message
+          document.getElementById('reservationForm').innerHTML = ''; // Clear form content
+          
           // Show success message with reservation time
           const successMessage = document.getElementById('successMessage');
           successMessage.innerText = `Thank you for your reservation! You have reserved a seat for the departure at ${selectedScheduleTime}. Please don't forget to contact us if needed.`;
