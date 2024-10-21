@@ -47,7 +47,6 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       background-color: #f9f9f9;
-      display: none;
     }
     .success-message {
       color: green;
@@ -125,7 +124,6 @@
 
     let selectedScheduleId = null;
     let selectedScheduleData = null;
-    let selectedScheduleElement = null;
 
     // Function to load the schedule from Firestore
     function loadSchedule() {
@@ -160,12 +158,18 @@
 
     // Show reservation form below the selected schedule
     function showReservationForm(scheduleId, availableSeats, occupancy) {
+      // Remove existing reservation form if present
+      const existingForm = document.getElementById('reservationForm');
+      if (existingForm) {
+        existingForm.remove();
+      }
+
       selectedScheduleId = scheduleId;
       selectedScheduleData = occupancy;
-      selectedScheduleElement = document.getElementById(`schedule-${scheduleId}`);
-      
+
       // Inject the form below the selected schedule
-      selectedScheduleElement.insertAdjacentHTML('afterend', `
+      const scheduleElement = document.getElementById(`schedule-${scheduleId}`);
+      scheduleElement.insertAdjacentHTML('afterend', `
         <div id="reservationForm" class="reservation-form">
           <h3>Reserve Your Seat</h3>
           <p>Available Seats: <span id="availableSeats">${availableSeats}</span></p>
@@ -230,7 +234,7 @@
           occupancy: updatedOccupancy
         }).then(() => {
           console.log("Updated occupancy to:", updatedOccupancy);
-          document.getElementById('successMessage').innerText = `Reservation successful! We will contact you shortly. Your reserved time is: ${selectedScheduleData}`;
+          document.getElementById('successMessage').innerText = `Reservation successful! We will contact you shortly.`;
           document.getElementById('successMessage').style.display = 'block';
         }).catch((error) => {
           console.error("Error updating occupancy: ", error);
