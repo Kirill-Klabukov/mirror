@@ -49,6 +49,7 @@
       display: flex;
       justify-content: space-between;
       margin-left: 20px;
+      margin-top: 10px;
     }
   </style>
   <!-- Include Firebase SDK via script tags -->
@@ -128,7 +129,7 @@
                   <div class="edit-passenger">
                     <p>Name: ${reservation.name}, Phone: ${reservation.phone}</p>
                     <button onclick="editPassenger('${reservationId}', '${reservation.name}', '${reservation.phone}')">Edit</button>
-                    <button class="delete-btn" onclick="deletePassenger('${reservationId}')">Delete</button>
+                    <button class="delete-btn" onclick="deletePassenger('${reservationId}', '${scheduleId}', '${data.occupancy}')">Delete</button>
                   </div>`;
               });
 
@@ -210,12 +211,27 @@
       }
     }
 
-    // Function to delete a passenger
-    function deletePassenger(reservationId) {
+    // Function to delete a passenger and update occupancy
+    function deletePassenger(reservationId, scheduleId, occupancy) {
       if (confirm("Are you sure you want to delete this passenger?")) {
         db.collection("reservations").doc(reservationId).delete().then(() => {
           alert("Passenger deleted successfully!");
-          loadSchedule(); // Reload the schedule after deletion
+
+          // Update occupancy after deleting passenger
+          const occupancyParts = occupancy.split('/');
+          let reserved = parseInt(occupancyParts[0]);
+          const total = parseInt(occupancyParts[1]);
+
+          reserved -= 1; // Free up a seat
+          const updatedOccupancy = `${reserved}/${total}`;
+
+          db.collection("schedule").doc(scheduleId).update({
+            occupancy: updatedOccupancy
+          }).then(() => {
+            loadSchedule(); // Reload the schedule list after updating occupancy
+          }).catch((error) => {
+            console.error("Error updating occupancy: ", error);
+          });
         }).catch((error) => {
           console.error("Error deleting passenger:", error);
         });
