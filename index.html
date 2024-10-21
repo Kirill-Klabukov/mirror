@@ -5,34 +5,97 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Party Bus Transport Schedule</title>
   <style>
+    /* General styles */
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 10px;
+      padding: 10px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
     h1 {
       color: #333;
+      text-align: center;
+      font-size: 24px;
     }
     .schedule {
       margin: 20px 0;
-      padding: 10px;
+      padding: 15px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 8px;
       background-color: #f9f9f9;
     }
     button {
-      padding: 10px;
+      padding: 10px 20px;
       background-color: #007bff;
       color: white;
       border: none;
       cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
     }
     #reservationForm {
       display: none;
       margin-top: 20px;
-      padding: 10px;
+      padding: 15px;
       border: 1px solid #ccc;
       border-radius: 5px;
       background-color: #f9f9f9;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+      body {
+        margin: 5px;
+        padding: 5px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .schedule {
+        padding: 10px;
+      }
+      button {
+        font-size: 14px;
+      }
+      label, input {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 20px;
+      }
+      .schedule {
+        padding: 8px;
+      }
+      button {
+        font-size: 12px;
+      }
+      label, input {
+        font-size: 12px;
+      }
     }
   </style>
   <!-- Include Firebase SDK via script tags -->
