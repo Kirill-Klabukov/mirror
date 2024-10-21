@@ -124,6 +124,7 @@
 
     let selectedScheduleId = null;
     let selectedScheduleData = null;
+    let selectedScheduleTime = null; // Track selected time for confirmation message
 
     // Function to load the schedule from Firestore
     function loadSchedule() {
@@ -147,7 +148,7 @@
                 <p><strong>Departure:</strong> ${data.departure}</p>
                 <p><strong>Arrival:</strong> ${data.arrival}</p>
                 <p><strong>Occupancy:</strong> ${data.occupancy}</p>
-                ${availableSeats > 0 ? `<button onclick="showReservationForm('${scheduleId}', ${availableSeats}, '${data.occupancy}')">Reserve</button>` : `<p>No seats available</p>`}
+                ${availableSeats > 0 ? `<button onclick="showReservationForm('${scheduleId}', ${availableSeats}, '${data.occupancy}', '${data.departure}')">Reserve</button>` : `<p>No seats available</p>`}
               </div>`;
           });
         }
@@ -157,7 +158,7 @@
     }
 
     // Show reservation form below the selected schedule
-    function showReservationForm(scheduleId, availableSeats, occupancy) {
+    function showReservationForm(scheduleId, availableSeats, occupancy, departure) {
       // Remove existing reservation form if present
       const existingForm = document.getElementById('reservationForm');
       if (existingForm) {
@@ -166,6 +167,7 @@
 
       selectedScheduleId = scheduleId;
       selectedScheduleData = occupancy;
+      selectedScheduleTime = departure; // Store the departure time
 
       // Inject the form below the selected schedule
       const scheduleElement = document.getElementById(`schedule-${scheduleId}`);
@@ -235,7 +237,9 @@
         }).then(() => {
           console.log("Updated occupancy to:", updatedOccupancy);
           document.getElementById('reservationForm').style.display = 'none'; // Hide the form
-          document.getElementById('successMessage').innerText = `Thank you! Your reservation for the selected time is successful. We will contact you shortly.`;
+
+          // Show success message with reservation time
+          document.getElementById('successMessage').innerText = `Thank you for your reservation! You have successfully reserved a spot for the ${selectedScheduleTime} departure. Please don't forget, and feel free to contact us if you need assistance.`;
           document.getElementById('successMessage').style.display = 'block';
         }).catch((error) => {
           console.error("Error updating occupancy: ", error);
