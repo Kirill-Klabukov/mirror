@@ -194,6 +194,7 @@
       const scheduleElement = document.getElementById(`schedule-${scheduleId}`);
       scheduleElement.insertAdjacentHTML('afterend', `
         <div id="reservationForm" class="reservation-form">
+          <h3>Reserve Your Seat</h3>
           <form onsubmit="submitReservation(event)">
             <label for="name">Your Name:</label>
             <input type="text" id="name" required>
@@ -254,9 +255,9 @@
         db.collection("schedule").doc(selectedScheduleId).update({
           occupancy: updatedOccupancy
         }).then(() => {
-          // Hide the form and show only the success message
-          document.getElementById('reservationForm').innerHTML = ''; // Clear form content
-          
+          // Hide the form after successful reservation
+          document.querySelector('#reservationForm form').style.display = 'none'; 
+
           // Show success message with reservation time
           const successMessage = document.getElementById('successMessage');
           successMessage.innerText = `Thank you for your reservation! You have reserved a seat for the departure at ${selectedScheduleTime}. Please don't forget to contact us if needed.`;
@@ -276,7 +277,7 @@
   </script>
 </head>
 <body>
-  <h1>Party Bus Schedule</h1>
+  <h1>Party Bus Transport Schedule</h1>
 
   <!-- Div to display the schedule list -->
   <div id="scheduleList"></div>
