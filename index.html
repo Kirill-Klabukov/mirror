@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Party Bus Schedule</title>
+  <title>Party Bus Transport Schedule</title>
   <style>
     /* General styles */
     body {
@@ -65,6 +65,26 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       font-size: 16px;
+    }
+
+    /* Footer styles */
+    footer {
+      margin-top: 30px;
+      padding: 10px;
+      background-color: #f1f1f1;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      border-top: 1px solid #ddd;
+    }
+    footer p {
+      margin: 5px 0;
+    }
+    .developer-info {
+      font-size: 12px;
+      color: #888;
+      text-align: right;
+      margin-top: 10px;
     }
 
     /* Mobile responsive adjustments */
@@ -239,7 +259,7 @@
           document.getElementById('reservationForm').style.display = 'none'; // Hide the form
 
           // Show success message with reservation time
-          document.getElementById('successMessage').innerText = `Thank you for your reservation! You have successfully reserved a spot for the ${selectedScheduleTime} departure. Please don't forget, and feel free to contact us if you need assistance.`;
+          document.getElementById('successMessage').innerText = `Thank you for your reservation! You have reserved a seat for the departure at ${selectedScheduleTime}. Please don't forget to contact us if needed.`;
           document.getElementById('successMessage').style.display = 'block';
         }).catch((error) => {
           console.error("Error updating occupancy: ", error);
@@ -261,5 +281,10 @@
   <!-- Div to display the schedule list -->
   <div id="scheduleList"></div>
 
+  <!-- Footer -->
+  <footer>
+    <p>Contact: Michael +123 456 7890</p>
+    <div class="developer-info">Developed by Cyril</div>
+  </footer>
 </body>
 </html>
