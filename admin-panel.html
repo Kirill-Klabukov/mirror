@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+</head>
+<body>
+  <h1>Admin Panel</h1>
+  <p>Welcome to the admin panel!</p>
+
+  <button id="logoutBtn">Logout</button>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AlzaSyCXiJx_FY3rAgDaoP8DoUPvUyrFqWp1UhE8",
+      authDomain: "partybus-56b21.firebaseapp.com",
+      projectId: "partybus-56b21",
+      storageBucket: "partybus-56b21.appspot.com",
+      messagingSenderId: "1051758565337",
+      appId: "1:1051758565337:web:e5cf5fc1f9d16918340f28",
+      measurementId: "G-3ZTSE3ZNTG"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Check if user is authenticated
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in
+        console.log('User is signed in:', user.email);
+      } else {
+        // User is not signed in, redirect to login page
+        window.location.href = '/login.html';
+      }
+    });
+
+    // Handle logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    logoutBtn.addEventListener('click', () => {
+      firebase.auth().signOut().then(() => {
+        window.location.href = '/login.html';
+      }).catch((error) => {
+        console.error('Error logging out:', error);
+      });
+    });
+  </script>
+</body>
+</html>
