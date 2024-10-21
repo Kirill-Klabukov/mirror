@@ -256,8 +256,8 @@
         db.collection("schedule").doc(selectedScheduleId).update({
           occupancy: updatedOccupancy
         }).then(() => {
-          // Hide the form after successful reservation
-          document.querySelector('#reservationForm form').style.display = 'none'; 
+          // Hide the entire reservation form, including headers and seat count
+          document.getElementById('reservationForm').innerHTML = ''; 
 
           // Show success message with reservation time
           const successMessage = document.getElementById('successMessage');
