@@ -234,7 +234,8 @@
           occupancy: updatedOccupancy
         }).then(() => {
           console.log("Updated occupancy to:", updatedOccupancy);
-          document.getElementById('successMessage').innerText = `Reservation successful! We will contact you shortly.`;
+          document.getElementById('reservationForm').style.display = 'none'; // Hide the form
+          document.getElementById('successMessage').innerText = `Thank you! Your reservation for the selected time is successful. We will contact you shortly.`;
           document.getElementById('successMessage').style.display = 'block';
         }).catch((error) => {
           console.error("Error updating occupancy: ", error);
