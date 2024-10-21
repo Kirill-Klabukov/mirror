@@ -52,6 +52,7 @@
       color: green;
       font-size: 18px;
       margin-top: 10px;
+      display: none;
     }
     label {
       display: block;
@@ -202,7 +203,7 @@
             <input type="text" id="phone" required>
             <button type="submit">Submit Reservation</button>
           </form>
-          <p id="successMessage" class="success-message" style="display:none;"></p>
+          <p id="successMessage" class="success-message"></p>
         </div>
       `);
     }
@@ -255,7 +256,10 @@
         db.collection("schedule").doc(selectedScheduleId).update({
           occupancy: updatedOccupancy
         }).then(() => {
-          document.getElementById('reservationForm').remove(); // Completely remove the form
+          // Hide the form after successful reservation
+          document.querySelector('#reservationForm form').style.display = 'none'; 
+
+          // Show success message with reservation time
           const successMessage = document.getElementById('successMessage');
           successMessage.innerText = `Thank you for your reservation! You have reserved a seat for the departure at ${selectedScheduleTime}. Please don't forget to contact us if needed.`;
           successMessage.style.display = 'block'; // Show success message
