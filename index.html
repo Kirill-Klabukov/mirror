@@ -41,13 +41,18 @@
     button:hover {
       background-color: #0056b3;
     }
-    #reservationForm {
-      display: none;
+    .reservation-form {
       margin-top: 20px;
       padding: 15px;
       border: 1px solid #ccc;
       border-radius: 5px;
       background-color: #f9f9f9;
+      display: none;
+    }
+    .success-message {
+      color: green;
+      font-size: 18px;
+      margin-top: 10px;
     }
     label {
       display: block;
@@ -120,6 +125,7 @@
 
     let selectedScheduleId = null;
     let selectedScheduleData = null;
+    let selectedScheduleElement = null;
 
     // Function to load the schedule from Firestore
     function loadSchedule() {
@@ -139,7 +145,7 @@
 
             // Append each schedule with a reserve button if seats are available
             scheduleDiv.innerHTML += `
-              <div class="schedule">
+              <div class="schedule" id="schedule-${scheduleId}">
                 <p><strong>Departure:</strong> ${data.departure}</p>
                 <p><strong>Arrival:</strong> ${data.arrival}</p>
                 <p><strong>Occupancy:</strong> ${data.occupancy}</p>
@@ -152,12 +158,27 @@
       });
     }
 
-    // Show reservation form
+    // Show reservation form below the selected schedule
     function showReservationForm(scheduleId, availableSeats, occupancy) {
       selectedScheduleId = scheduleId;
       selectedScheduleData = occupancy;
-      document.getElementById('reservationForm').style.display = 'block';
-      document.getElementById('availableSeats').innerText = availableSeats;
+      selectedScheduleElement = document.getElementById(`schedule-${scheduleId}`);
+      
+      // Inject the form below the selected schedule
+      selectedScheduleElement.insertAdjacentHTML('afterend', `
+        <div id="reservationForm" class="reservation-form">
+          <h3>Reserve Your Seat</h3>
+          <p>Available Seats: <span id="availableSeats">${availableSeats}</span></p>
+          <form onsubmit="submitReservation(event)">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" required>
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" required>
+            <button type="submit">Submit Reservation</button>
+          </form>
+          <p id="successMessage" class="success-message" style="display:none;"></p>
+        </div>
+      `);
     }
 
     // Submit reservation
@@ -209,10 +230,8 @@
           occupancy: updatedOccupancy
         }).then(() => {
           console.log("Updated occupancy to:", updatedOccupancy);
-          alert("Reservation successful! Occupancy updated.");
-          document.getElementById('reservationForm').style.display = 'none';
-          document.getElementById('reservationForm').reset();
-          loadSchedule(); // Reload the schedule list
+          document.getElementById('successMessage').innerText = `Reservation successful! We will contact you shortly. Your reserved time is: ${selectedScheduleData}`;
+          document.getElementById('successMessage').style.display = 'block';
         }).catch((error) => {
           console.error("Error updating occupancy: ", error);
         });
@@ -233,19 +252,5 @@
   <!-- Div to display the schedule list -->
   <div id="scheduleList"></div>
 
-  <!-- Reservation form -->
-  <div id="reservationForm">
-    <h3>Reserve Your Seat</h3>
-    <p>Available Seats: <span id="availableSeats"></span></p>
-    <form onsubmit="submitReservation(event)">
-      <label for="name">Your Name:</label>
-      <input type="text" id="name" required>
-
-      <label for="phone">Phone Number:</label>
-      <input type="text" id="phone" required>
-
-      <button type="submit">Submit Reservation</button>
-    </form>
-  </div>
 </body>
 </html>
