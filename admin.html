@@ -83,7 +83,8 @@
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
         // If not signed in, redirect to login
-        window.location.href = './login.html';  // Adjust path to the correct one for your setup
+        window.location.href = '/mirror/login.html';  // This should point to your correct subfolder
+
       } else {
         // Load the schedule if user is authenticated
         loadSchedule();
